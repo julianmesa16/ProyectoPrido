@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIDO — App de Divisas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login" class="screen active">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-logo">P</div>
+      <div class="brand-name">PIDO</div>
+      <div class="brand-tagline">Con PIDO todo es sencillo.<br>Cambia, transfiere y gestiona tus divisas.</div>
+      <div class="brand-feats">
+        <div class="brand-feat"><div class="feat-dot">💱</div> Cambio de divisas en segundos</div>
+        <div class="brand-feat"><div class="feat-dot">↗️</div> Transferencias en USD entre usuarios</div>
+        <div class="brand-feat"><div class="feat-dot">🔒</div> Tu dinero, siempre seguro</div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-form-box">
+        <div class="auth-form-title">Bienvenido de vuelta</div>
+        <div class="auth-form-sub">Ingresa a tu cuenta PIDO</div>
+        <div class="error-msg" id="loginError">Usuario o contraseña incorrectos.</div>
+        <div class="form-group">
+          <label class="form-label">Número de celular</label>
+          <input class="form-input" id="loginCel" type="text" placeholder="3XX XXX XXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" id="loginPass" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn-big" onclick="login()">Ingresar →</button>
+        <div class="auth-switch">¿No tienes cuenta? <a onclick="mostrarRegistro()">Regístrate aquí</a></div>
+        <div class="demo-hint">
+          <strong>Admin:</strong> celular <code>admin</code> / contraseña <code>admin123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ REGISTRO ══════════════ -->
+<div id="register" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-logo">P</div>
+      <div class="brand-name">PIDO</div>
+      <div class="brand-tagline">Crea tu cuenta y empieza a manejar tus divisas.</div>
+      <div class="brand-feats">
+        <div class="brand-feat"><div class="feat-dot">🎁</div> Saldo de bienvenida incluido</div>
+        <div class="brand-feat"><div class="feat-dot">⚡</div> Registro en menos de 1 minuto</div>
+        <div class="brand-feat"><div class="feat-dot">🌎</div> COP, USD y EUR disponibles</div>
+      </div>
+    </div>
+    <div class="auth-form-side">
+      <div class="auth-form-box">
+        <div class="auth-form-title">Crear cuenta</div>
+        <div class="auth-form-sub">Ingresa tus datos personales</div>
+        <div class="form-group">
+          <label class="form-label">Nombre completo</label>
+          <input class="form-input" id="nombre" type="text" placeholder="Tu nombre completo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cédula</label>
+          <input class="form-input" id="cc" type="text" placeholder="Número de cédula">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número de celular</label>
+          <input class="form-input" id="celular" type="text" placeholder="3XX XXX XXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" id="pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn-big" onclick="mostrarTerminos()">Crear cuenta →</button>
+        <div class="auth-switch">¿Ya tienes cuenta? <a onclick="mostrarLogin()">Inicia sesión</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TOPBAR (usuario) ══════════════ -->
+<header class="topbar" id="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-logo-badge">P</div>
+    PIDO
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="topAvatar">J</div>
+      <div class="topbar-user-name" id="topName">Usuario</div>
+    </div>
+    <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+  </div>
+</header>
+
+<nav class="tab-nav" id="tabNav">
+  <button class="tab-btn" data-tab="u-inicio"         onclick="showTab('u-inicio')">🏠 Inicio</button>
+  <button class="tab-btn" data-tab="u-movimientos"    onclick="showTab('u-movimientos')">↔️ Movimientos</button>
+  <button class="tab-btn" data-tab="u-cambio"         onclick="showTab('u-cambio')">💱 Cambio</button>
+  <button class="tab-btn" data-tab="u-transferencias" onclick="showTab('u-transferencias')">↗️ Transferir</button>
+  <button class="tab-btn" data-tab="u-tasas"          onclick="showTab('u-tasas')">📈 Tasas</button>
+  <button class="tab-btn" data-tab="u-perfil"         onclick="showTab('u-perfil')">👤 Perfil</button>
+</nav>
+
+<!-- ══════════════ INICIO ══════════════ -->
+<div id="u-inicio" class="screen tab-pane">
+  <div class="app-content">
+    <div class="hero-card">
+      <div class="hero-greeting">Hola,</div>
+      <div class="hero-name" id="heroName">—</div>
+      <div class="balances-strip">
+        <div class="balance-card">
+          <div class="balance-flag">🇨🇴</div>
+          <div class="balance-label">Pesos</div>
+          <div class="balance-val"><span class="currency">COP</span><span id="saldoCOP">—</span></div>
+        </div>
+        <div class="balance-card">
+          <div class="balance-flag">🇺🇸</div>
+          <div class="balance-label">Dólar</div>
+          <div class="balance-val"><span class="currency">USD</span><span id="saldoUSD">—</span></div>
+        </div>
+        <div class="balance-card">
+          <div class="balance-flag">🇪🇺</div>
+          <div class="balance-label">Euro</div>
+          <div class="balance-val"><span class="currency">EUR</span><span id="saldoEUR">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-grid">
+      <div class="action-btn" onclick="showTab('u-cambio')">
+        <div class="action-icon">💱</div>
+        <div class="action-label">Cambio</div>
+      </div>
+      <div class="action-btn" onclick="openRecarga()">
+        <div class="action-icon">⬆️</div>
+        <div class="action-label">Recargar</div>
+      </div>
+      <div class="action-btn" onclick="showTab('u-transferencias')">
+        <div class="action-icon">↗️</div>
+        <div class="action-label">Transferir</div>
+      </div>
+      <div class="action-btn" onclick="showTab('u-movimientos')">
+        <div class="action-icon">📋</div>
+        <div class="action-label">Historial</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      Movimientos recientes
+      <span class="see-all" onclick="showTab('u-movimientos')">Ver todos →</span>
+    </div>
+    <div class="card-list" id="recentMov"></div>
+  </div>
+</div>
+
+<!-- ══════════════ MOVIMIENTOS ══════════════ -->
+<div id="u-movimientos" class="screen tab-pane">
+  <div class="app-content">
+    <div class="section-title" style="margin-bottom:20px">Historial de movimientos</div>
+    <div class="filter-chips-bar">
+      <div class="filter-chip active" onclick="filterMovUser(this,'all')">Todos</div>
+      <div class="filter-chip" onclick="filterMovUser(this,'recarga')">Recargas</div>
+      <div class="filter-chip" onclick="filterMovUser(this,'cambio')">Cambios</div>
+      <div class="filter-chip" onclick="filterMovUser(this,'transferencia')">Transferencias</div>
+    </div>
+    <div class="card-list" id="movListUser"></div>
+  </div>
+</div>
+
+<!-- ══════════════ CAMBIO ══════════════ -->
+<div id="u-cambio" class="screen tab-pane">
+  <div class="app-content">
+    <div class="section-title" style="margin-bottom:20px">Cambio de divisas</div>
+    <div class="cambio-card">
+      <div class="cambio-selector">
+        <div class="cambio-currency">
+          <span class="curr-flag" id="fromFlag">🇺🇸</span>
+          <div>
+            <div class="curr-name" id="fromName">Dólar</div>
+            <div class="curr-balance" id="fromBalance">—</div>
+          </div>
+        </div>
+        <select class="curr-select" id="fromCurrency" onchange="updateCambioUI()">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="COP">COP</option>
+        </select>
+      </div>
+      <div class="swap-btn" onclick="swapCurrencies()">⇅</div>
+      <div class="cambio-selector">
+        <div class="cambio-currency">
+          <span class="curr-flag" id="toFlag">🇪🇺</span>
+          <div>
+            <div class="curr-name" id="toName">Euro</div>
+            <div class="curr-balance" id="toBalance">—</div>
+          </div>
+        </div>
+        <select class="curr-select" id="toCurrency" onchange="updateCambioUI()">
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+          <option value="COP">COP</option>
+        </select>
+      </div>
+      <input class="amount-input" type="number" id="montoCambio" placeholder="0.00" oninput="updateCambioUI()">
+      <div class="result-preview" id="resultPreview">
+        <div class="result-label">Recibirás</div>
+        <div class="result-amount">—</div>
+      </div>
+      <button class="btn-big" onclick="convertirMoneda()">Confirmar cambio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TRANSFERENCIAS USD ══════════════ -->
+<div id="u-transferencias" class="screen tab-pane">
+  <div class="app-content">
+    <div class="section-title" style="margin-bottom:4px">Transferir USD</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">
+      Las transferencias entre usuarios solo se realizan en <strong>dólares (USD)</strong>.
+    </div>
+
+    <!-- Tarjeta para nueva transferencia -->
+    <div class="cambio-card" style="margin-bottom:24px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:16px">Nueva transferencia</div>
+
+      <div class="form-group">
+        <label class="form-label">Celular del destinatario</label>
+        <input class="form-input" id="transferCelular" type="text"
+               placeholder="Número de celular del receptor"
+               style="font-family:'Space Mono',monospace">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Monto en USD
+          <span id="transferUSDBalance"
+                style="float:right;font-weight:400;color:var(--muted);font-size:12px"></span>
+        </label>
+        <input class="form-input" id="transferMonto" type="number" min="0.01" step="0.01"
+               placeholder="0.00"
+               style="font-family:'Space Mono',monospace"
+               oninput="previewTransfer()">
+      </div>
+
+      <!-- Preview del monto -->
+      <div id="transferPreview"
+           style="background:var(--surface2,rgba(255,255,255,0.05));border-radius:10px;
+                  padding:12px 16px;margin-bottom:14px;display:none">
+        <div style="font-size:12px;color:var(--muted)">Enviarás</div>
+        <div id="transferPreviewAmt"
+             style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#22c55e"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descripción <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+        <input class="form-input" id="transferDesc" type="text" placeholder="Ej: Pago préstamo, regalo...">
+      </div>
+
+      <!-- Mensajes de error / éxito -->
+      <div id="transferError"
+           style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);
+                  border-radius:10px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:12px"></div>
+      <div id="transferResult"
+           style="display:none;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
+                  border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:12px"></div>
+
+      <button class="btn-big" onclick="realizarTransferencia()">↗️ Transferir USD</button>
+    </div>
+
+    <!-- Historial de transferencias -->
+    <div class="section-title" style="margin-bottom:14px">
+      Historial de transferencias
+      <span class="see-all" onclick="cargarHistorialTransferencias()">Actualizar</span>
+    </div>
+    <div class="card-list" id="historialTransferencias">
+      <div class="empty-state">Cargando historial...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TASAS ══════════════ -->
+<div id="u-tasas" class="screen tab-pane">
+  <div class="app-content">
+    <div class="section-title" style="margin-bottom:20px">Tasas de cambio actuales</div>
+    <div class="tasas-grid" id="tasasGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ PERFIL ══════════════ -->
+<div id="u-perfil" class="screen tab-pane">
+  <div class="app-content">
+    <div class="profile-header">
+      <div class="profile-avatar" id="perfAvatar">J</div>
+      <div>
+        <div class="profile-name" id="perfName">—</div>
+        <div class="profile-id" id="perfIdLabel">CC: —</div>
+        <div class="profile-badge">● Cuenta activa</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title" style="display:flex;justify-content:space-between;align-items:center">
+        Información personal
+        <button class="btn-sm btn-outline" onclick="abrirEditarPerfil()" style="font-size:12px;padding:4px 10px">✏️ Editar</button>
+      </div>
+      <div class="info-row"><span class="info-key">Nombre completo</span><span class="info-val" id="infoNombre">—</span></div>
+      <div class="info-row"><span class="info-key">Cédula</span><span class="info-val" id="infoCC">—</span></div>
+      <div class="info-row"><span class="info-key">Celular</span><span class="info-val" id="infoCel">—</span></div>
+      <div class="info-row"><span class="info-key">ID de cuenta</span><span class="info-val" id="infoId">—</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Mis saldos</div>
+      <div class="info-row"><span class="info-key">🇨🇴 Pesos colombianos</span><span class="info-val positive" id="perfCOP">—</span></div>
+      <div class="info-row"><span class="info-key">🇺🇸 Dólar estadounidense</span><span class="info-val positive" id="perfUSD">—</span></div>
+      <div class="info-row"><span class="info-key">🇪🇺 Euro</span><span class="info-val positive" id="perfEUR">—</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Estadísticas</div>
+      <div class="info-row"><span class="info-key">Total de movimientos</span><span class="info-val" id="perfTransCount">—</span></div>
+      <div class="info-row"><span class="info-key">Estado de cuenta</span><span class="info-val" style="color:var(--green)">Activa</span></div>
+    </div>
+    <button class="btn-big btn-danger-outline" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL RECARGA ══════════════ -->
+<div id="modalRecarga" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="font-size:17px;font-weight:700">Recargar cuenta</div>
+      <button class="modal-close" onclick="closeRecarga()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Moneda</label>
+      <select class="form-input" id="monedaRecarga">
+        <option value="COP">🇨🇴 Pesos colombianos (COP)</option>
+        <option value="USD">🇺🇸 Dólar (USD)</option>
+        <option value="EUR">🇪🇺 Euro (EUR)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Monto</label>
+      <input class="form-input" style="font-family:'Space Mono',monospace"
+             id="montoRecarga" type="number" placeholder="0.00">
+    </div>
+    <button class="btn-big" onclick="recargarCuenta()">Recargar</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL EDITAR PERFIL ══════════════ -->
+<div id="modalEditarPerfil" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="font-size:17px;font-weight:700">Editar perfil</div>
+      <button class="modal-close" onclick="cerrarEditarPerfil()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nombre completo</label>
+      <input class="form-input" id="editNombre" type="text" placeholder="Tu nombre completo">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Número de celular</label>
+      <input class="form-input" id="editCelular" type="text" placeholder="3XX XXX XXXX">
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">
+      🔒 La cédula y el ID de cuenta no se pueden modificar.
+    </div>
+    <button class="btn-big" onclick="guardarPerfil()">Guardar cambios</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL TÉRMINOS Y CONDICIONES ══════════════ -->
+<div id="modalTerminos" class="modal-overlay">
+  <div class="modal" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column">
+    <div class="modal-header" style="flex-shrink:0">
+      <div style="font-size:17px;font-weight:700">📄 Términos y Condiciones</div>
+      <button class="modal-close" onclick="cerrarTerminos()">✕</button>
+    </div>
+    <div id="terminosContenido" style="overflow-y:auto;flex:1;font-size:13px;line-height:1.7;color:var(--text-secondary);white-space:pre-wrap;padding:4px 0 16px"></div>
+    <div style="flex-shrink:0;padding-top:12px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+        <input type="checkbox" id="checkTerminos" style="width:18px;height:18px;cursor:pointer">
+        He leído y acepto los términos y condiciones
+      </label>
+      <button class="btn-big" style="margin-top:12px" onclick="confirmarTerminos()">Continuar y crear cuenta →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastMsg">✓ Listo</span></div>
+
+<script src="script.js"></script>
+<script>
+  // Preview en tiempo real del monto a transferir
+  function previewTransfer() {
+    const monto = parseFloat(document.getElementById('transferMonto').value);
+    const prev  = document.getElementById('transferPreview');
+    const amt   = document.getElementById('transferPreviewAmt');
+    if (!isNaN(monto) && monto > 0) {
+      amt.textContent     = '$' + monto.toFixed(2) + ' USD';
+      prev.style.display  = 'block';
+    } else {
+      prev.style.display  = 'none';
+    }
+  }
+</script>
+</body>
+</html>

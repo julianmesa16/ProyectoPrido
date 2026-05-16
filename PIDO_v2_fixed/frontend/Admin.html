@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIDO — Panel Administrativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">P</div>
+    <div>
+      <div class="logo-text">PIDO</div>
+      <div class="logo-sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <div class="nav-item active" onclick="showAdminPage('dashboard')">
+      <span class="nav-icon">⬛</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showAdminPage('usuarios')">
+      <span class="nav-icon">👥</span> Usuarios
+      <span class="nav-badge" id="sideUserCount">0</span>
+    </div>
+    <div class="nav-item" onclick="showAdminPage('movimientos')">
+      <span class="nav-icon">↔️</span> Movimientos
+    </div>
+    <div class="nav-label" style="margin-top:18px">Control</div>
+    <div class="nav-item" onclick="showAdminPage('tasas')">
+      <span class="nav-icon">📈</span> Tasas de cambio
+    </div>
+    <div class="nav-item" onclick="showAdminPage('configuracion')">
+      <span class="nav-icon">⚙️</span> Configuración
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-profile-item">
+      <div class="sidebar-avatar">A</div>
+      <div>
+        <div class="sidebar-admin-name">Admin PIDO</div>
+        <div class="sidebar-admin-role">SUPERADMIN</div>
+      </div>
+    </div>
+    <a href="index.html" class="nav-item" style="margin-top:8px;text-decoration:none;color:inherit">
+      <span class="nav-icon">🚪</span> Cerrar sesión
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="admin-main">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="admin-dashboard" class="admin-page active">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">Resumen general del sistema PIDO</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Usuarios Totales</div>
+        <div class="stat-value orange" id="statTotal">0</div>
+        <div class="stat-change"><span class="up">↑ registrados en el sistema</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cuentas activas</div>
+        <div class="stat-value green" id="statActive">0</div>
+        <div class="stat-change">de <span id="statTotal2">0</span> totales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Suspendidos</div>
+        <div class="stat-value" id="statSuspended" style="color:var(--red)">0</div>
+        <div class="stat-change">requieren revisión</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Microservicios</div>
+        <div class="stat-value blue">5</div>
+        <div class="stat-change" style="color:#22c55e">● Auth · Accounts · Exchange · Transfers · Admin</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Usuarios registrados</div>
+            <button class="btn-sm btn-outline" onclick="showAdminPage('usuarios')">Ver todos</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Usuario</th><th>Saldo COP</th><th>Estado</th></tr></thead>
+              <tbody id="dashUserTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Últimos movimientos del sistema</div>
+          </div>
+          <div id="dashMovimientos"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Actividad reciente</div>
+          </div>
+          <div id="activityFeed"></div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Tasas actuales</div>
+          </div>
+          <div id="dashRates"></div>
+          <div style="margin-top:12px">
+            <button class="btn-sm btn-outline" onclick="showAdminPage('tasas')">Editar tasas →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ USUARIOS ══ -->
+  <div id="admin-usuarios" class="admin-page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Gestión de Usuarios</div>
+        <div class="page-subtitle">Control de todas las cuentas de usuarios normales</div>
+      </div>
+      <button class="btn-primary" onclick="exportUsers()">↓ Exportar CSV</button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula, celular..." oninput="filterUsers()">
+      </div>
+      <select class="filter-select" id="statusFilter" onchange="filterUsers()">
+        <option value="all">Todos los estados</option>
+        <option value="activo">Activos</option>
+        <option value="suspendido">Suspendidos</option>
+      </select>
+    </div>
+
+    <div class="admin-card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th><th>Cédula</th><th>Celular</th>
+              <th>Saldo COP</th><th>Saldo USD</th><th>Saldo EUR</th>
+              <th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MOVIMIENTOS ══ -->
+  <div id="admin-movimientos" class="admin-page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Movimientos</div>
+        <div class="page-subtitle">Historial completo de transacciones del sistema</div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div id="allMovimientos"></div>
+    </div>
+  </div>
+
+  <!-- ══ TASAS ══ -->
+  <div id="admin-tasas" class="admin-page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Tasas de Cambio</div>
+        <div class="page-subtitle">Administra las tasas de conversión del sistema</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">Editar tasas</div>
+        </div>
+        <div id="rateEditor"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+          <button class="btn-primary" onclick="saveRates()">💾 Guardar cambios manuales</button>
+          <button class="btn-outline" onclick="syncTasasAPI()" id="btnSyncAPI">🌐 Actualizar desde API</button>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn-primary" onclick="saveRates()">Guardar cambios</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">Vista previa de conversiones</div>
+        </div>
+        <div id="ratePreview"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONFIGURACIÓN ══ -->
+  <div id="admin-configuracion" class="admin-page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Configuración</div>
+        <div class="page-subtitle">Parámetros generales de la aplicación PIDO</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title">Parámetros del sistema</div></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label class="form-label">Nombre de la App</label>
+            <input type="text" value="PIDO" class="form-input" style="margin-top:6px">
+          </div>
+          <div>
+            <label class="form-label">Saldo inicial por registro</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">COP</div><input type="number" id="cfgCOP" min="0" value="0" class="form-input"></div>
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">USD</div><input type="number" id="cfgUSD" min="0" value="0" class="form-input"></div>
+              <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">EUR</div><input type="number" id="cfgEUR" min="0" value="0" class="form-input"></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:6px">💡 Usa 0 para que las cuentas nuevas inicien sin saldo</div>
+          </div>
+        </div>
+        <div style="margin-top:18px">
+          <button class="btn-primary" onclick="guardarConfiguracion()">Guardar</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Estado del sistema</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="toggle-row">
+              <span>Registro de nuevos usuarios</span>
+              <label class="toggle"><input type="checkbox" checked onchange="showToast(this.checked?'✅ Registro activado':'⛔ Registro desactivado')"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Transacciones activas</span>
+              <label class="toggle"><input type="checkbox" checked onchange="showToast(this.checked?'✅ Transacciones activadas':'⛔ Transacciones pausadas')"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Transferencias USD habilitadas</span>
+              <label class="toggle"><input type="checkbox" checked onchange="showToast(this.checked?'✅ Transferencias USD activas':'⛔ Transferencias USD pausadas')"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <span>Modo mantenimiento</span>
+              <label class="toggle"><input type="checkbox" onchange="showToast(this.checked?'🔧 Mantenimiento ON':'✅ Mantenimiento OFF')"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info de microservicios -->
+        <div class="admin-card" style="margin-top:16px">
+          <div class="admin-card-header"><div class="admin-card-title">🔌 Microservicios</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span>🔐 Auth Service</span>
+              <span style="font-family:'Space Mono',monospace;color:var(--muted)">:3001</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span>💳 Accounts Service</span>
+              <span style="font-family:'Space Mono',monospace;color:var(--muted)">:3002</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span>💱 Exchange Service</span>
+              <span style="font-family:'Space Mono',monospace;color:var(--muted)">:3003</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span>↗️ Transfers Service</span>
+              <span style="font-family:'Space Mono',monospace;color:var(--muted)">:3004</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span>🛡️ Admin Service</span>
+              <span style="font-family:'Space Mono',monospace;color:var(--muted)">:3005</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ MODAL DETALLE USUARIO ══ -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="font-size:16px;font-weight:700">Detalle de usuario</div>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <div class="user-modal-header">
+      <div class="user-modal-avatar" id="modalInitial">J</div>
+      <div>
+        <div class="user-modal-name" id="modalName">—</div>
+        <div class="user-modal-id" id="modalIdLabel">CC: —</div>
+        <div style="margin-top:6px" id="modalStatus"></div>
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-item-label">Celular</div><div class="detail-item-value" id="modalCel">—</div></div>
+      <div class="detail-item"><div class="detail-item-label">Cédula</div><div class="detail-item-value" id="modalCC">—</div></div>
+      <div class="detail-item"><div class="detail-item-label">Movimientos</div><div class="detail-item-value" id="modalTrans">—</div></div>
+      <div class="detail-item"><div class="detail-item-label">ID</div><div class="detail-item-value" id="modalUserId">—</div></div>
+    </div>
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:10px">Saldos</div>
+    <div class="balances-row-modal">
+      <div class="balance-box-modal"><div class="balance-currency-modal">🇨🇴 COP</div><div class="balance-amount-modal" id="modalCOP">—</div></div>
+      <div class="balance-box-modal"><div class="balance-currency-modal">🇺🇸 USD</div><div class="balance-amount-modal" id="modalUSD">—</div></div>
+      <div class="balance-box-modal"><div class="balance-currency-modal">🇪🇺 EUR</div><div class="balance-amount-modal" id="modalEUR">—</div></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:10px">Últimos movimientos</div>
+      <div id="modalMovimientos"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-sm btn-outline" id="toggleStatusBtn" onclick="toggleSelectedUser()">—</button>
+      <button class="btn-sm btn-danger" style="margin-left:auto" onclick="deleteSelectedUser()">Eliminar cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastMsg">✓ Listo</span></div>
+
+<script src="script.js"></script>
+<script>
+// ── Navegación admin ──
+function showAdminPage(page) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('admin-' + page);
+  if (el) el.classList.add('active');
+  event?.currentTarget?.classList.add('active');
+
+  if (page === 'tasas') renderRateEditor();
+  if (page === 'movimientos') cargarYRenderMovAdmin();
+}
+
+// ── Sincronizar statTotal con statTotal2 ──
+const _origRenderDash = renderDashboard;
+
+// Poblar mini tabla del dashboard con los usuarios cargados
+function poblarDashUserTable() {
+  const tbody = document.getElementById('dashUserTable');
+  if (!tbody || !_adminUsuarios.length) return;
+  const fmt = v => '$' + parseFloat(v||0).toLocaleString('es-CO', { maximumFractionDigits:0 });
+  tbody.innerHTML = _adminUsuarios.slice(0, 5).map(u => `
+    <tr>
+      <td>${u.nombre}</td>
+      <td class="mono">${fmt(u.saldo?.COP)}</td>
+      <td><span class="badge badge-${u.status==='activo'?'green':'red'}">${u.status}</span></td>
+    </tr>`).join('');
+  const t2 = document.getElementById('statTotal2');
+  if (t2) t2.textContent = _adminUsuarios.length;
+}
+
+// Poblar dashMovimientos con los últimos movimientos globales
+function poblarDashMovimientos() {
+  const div = document.getElementById('dashMovimientos');
+  if (!div || !_adminMovimientos.length) return;
+  div.innerHTML = _adminMovimientos.slice(0, 4).map(m => movItemHTML(m, true)).join('');
+}
+
+// Override renderDashboard para agregar las tablas del dashboard
+const _baseDash = window.renderDashboard;
+window.renderDashboard = function() {
+  _baseDash && _baseDash();
+  poblarDashUserTable();
+  poblarDashMovimientos();
+};
+
+// ── Configuración de saldos iniciales ──
+async function cargarConfiguracion() {
+  try {
+    const cfg = await apiFetchAdmin('/admin/configuracion');
+    const setCfg = (id, clave) => {
+      const el = document.getElementById(id);
+      if (el && cfg[clave]) el.value = parseFloat(cfg[clave].valor) || 0;
+    };
+    setCfg('cfgCOP', 'saldo_inicial_COP');
+    setCfg('cfgUSD', 'saldo_inicial_USD');
+    setCfg('cfgEUR', 'saldo_inicial_EUR');
+  } catch(e) { /* sin config cargada, usar 0 por defecto */ }
+}
+
+async function guardarConfiguracion() {
+  const claves = [
+    { id: 'cfgCOP', clave: 'saldo_inicial_COP' },
+    { id: 'cfgUSD', clave: 'saldo_inicial_USD' },
+    { id: 'cfgEUR', clave: 'saldo_inicial_EUR' }
+  ];
+  try {
+    for (const { id, clave } of claves) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const valor = parseFloat(el.value);
+      if (isNaN(valor) || valor < 0) {
+        showToast('❌ Ingresa valores numéricos >= 0'); return;
+      }
+      await apiFetchAdmin('/admin/configuracion', 'POST', { clave, valor });
+    }
+    showToast('⚙️ Configuración guardada correctamente');
+  } catch(e) {
+    showToast('❌ Error al guardar configuración: ' + (e.message || ''));
+  }
+}
+
+// ── Sincronizar tasas desde API externa ──
+async function syncTasasAPI() {
+  const btn = document.getElementById('btnSyncAPI');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sincronizando...'; }
+  try {
+    await fetch(SERVICES.exchange + '/tasas/sync-api', { method: 'POST' });
+    // Recargar tasas y metadatos
+    const resp = await apiFetch('exchange', '/tasas');
+    if (resp && resp.tasas) { tasas = resp.tasas; tasasMeta = resp.meta || {}; }
+    else tasas = resp;
+    renderRateEditor();
+    showToast('🌐 Tasas actualizadas desde API correctamente');
+  } catch(err) {
+    showToast('❌ Error al sincronizar con API: ' + (err.message || ''));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🌐 Actualizar desde API'; }
+  }
+}
+
+// Iniciar
+cargarDashboardAdmin();
+cargarConfiguracion();
+</script>
+</body>
+</html>
