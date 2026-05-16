@@ -23,18 +23,6 @@ PIDO_v2/
 
 ---
 
-## 1. Configurar MySQL Workbench
-
-1. Abre **MySQL Workbench** y conéctate a tu servidor local (puerto **3306**).
-2. Ejecuta el archivo `DB/bd.sql` para crear la base de datos y las tablas.
-3. Edita `services/db.js` y ajusta `password` con tu contraseña de MySQL.
-
-```js
-// services/db.js  — línea a cambiar:
-password: process.env.DB_PASSWORD || 'tu_password',
-```
-
-> ⚠️ Ya **no** se usa XAMPP ni el puerto 3307. MySQL Workbench corre en el **puerto 3306**.
 
 ---
 
@@ -68,9 +56,7 @@ npm run admin      # :3005
 Abre `frontend/index.html` directamente en el navegador
 (o sirve la carpeta con Live Server en VS Code).
 
----
-
-## Novedades v2
+---git 
 
 ### Microservicios
 Cada módulo de negocio es un servidor Express independiente:

@@ -1,5 +1,14 @@
 {
+  "name": "pido-services",
+  "version": "2.0.0",
+  "main": "index.js",
+  "scripts": {
+"start": "node node_modules/concurrently/dist/bin/concurrently.js \"npm run auth\" \"npm run accounts\" \"npm run exchange\" \"npm run transfers\" \"npm run admin\""    "auth": "node auth/index.js",
+    "accounts": "node accounts/index.js",
+    "exchange": "node exchange/index.js",
+    "transfers": "node transfers/index.js",
+    "admin": "node admin/index.js"
+  },
   "dependencies": {
     "concurrently": "^9.2.1"
   }
-}
