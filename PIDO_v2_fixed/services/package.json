@@ -8,7 +8,7 @@
     "exchange":  "node exchange/index.js",
     "transfers": "node transfers/index.js",
     "admin":     "node admin/index.js",
-    "start":     "concurrently \"npm run auth\" \"npm run accounts\" \"npm run exchange\" \"npm run transfers\" \"npm run admin\""
+    "start": "node ./node_modules/concurrently/dist/bin/concurrently.js \"npm run auth\" \"npm run accounts\" \"npm run exchange\" \"npm run transfers\" \"npm run admin\""
   },
   "dependencies": {
     "cors":         "^2.8.5",
